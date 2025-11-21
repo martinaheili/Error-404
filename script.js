@@ -1,4 +1,3 @@
-
 document.addEventListener("DOMContentLoaded", () => {
   // --- Canvas Glitch ---
   const canvas = document.getElementById("glitchCanvas");
@@ -65,7 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   glitchText();
 
-  // --- Terminal y modales (tu código original) ---
+  // --- Terminal y modales ---
   const terminal = document.getElementById("terminal");
   const errorSound = document.getElementById("errorSound");
   const firstModal = document.getElementById("modal");
@@ -112,9 +111,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }, 1000);
 
   function showFirstModal() {
-    firstModal.style.top = "50%";
-    firstModal.style.left = "50%";
-    firstModal.style.transform = "translate(-50%, -50%)";
+    // El modal ya está centrado por CSS, solo mostrarlo
+    firstModal.style.display = "flex";
+    firstModal.style.flexDirection = "column";
+    firstModal.style.justifyContent = "space-between";
+    
     setTimeout(() => firstModal.classList.add("show"), 10);
 
     const countdownEl = firstModal.querySelector(".countdown");
@@ -132,32 +133,16 @@ document.addEventListener("DOMContentLoaded", () => {
       setTimeout(()=>firstModal.style.display="none",500);
     };
 
-    firstModal.querySelector(".contactBtn").onclick = () => createModal(false);
+    firstModal.querySelector(".contactBtn").onclick = () => createModal();
 
     makeDraggable(firstModal);
   }
 
-  function createModal(isFirst=false) {
+  function createModal() {
     const modalClone = document.createElement("div");
     modalClone.classList.add("modal-base");
-
-    const modalWidth = 500;
-    const modalHeight = 350;
-
-    if(isFirst){
-      modalClone.style.top="50%";
-      modalClone.style.left="50%";
-      modalClone.style.transform="translate(-50%, -50%)";
-    } else {
-      const winWidth = window.innerWidth;
-      const winHeight = window.innerHeight;
-      const randomTop = Math.random()*(winHeight-modalHeight);
-      const randomLeft = Math.random()*(winWidth-modalWidth);
-      modalClone.style.top=`${randomTop}px`;
-      modalClone.style.left=`${randomLeft}px`;
-      modalClone.style.transform="translate(0,0)";
-    }
-
+    
+    // Primero agregar el contenido HTML
     modalClone.innerHTML=`
       <span class="closeModal">✖</span>
       <h1>MARS NOT FOUND</h1>
@@ -167,7 +152,47 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
       <button class="contactBtn">CONTACT BASE</button>
     `;
+    
+    // Agregar al DOM para calcular dimensiones reales
     document.body.appendChild(modalClone);
+    
+    // Mostrar y forzar cálculo de dimensiones
+    modalClone.style.display = "flex";
+    modalClone.style.flexDirection = "column";
+    modalClone.style.justifyContent = "space-between";
+    
+    // Obtener dimensiones REALES después de tener contenido y estar en el DOM
+    const modalWidth = modalClone.offsetWidth;
+    const modalHeight = modalClone.offsetHeight;
+
+    // Calcular posición aleatoria sin tocar bordes
+    const margin = window.innerWidth <= 576 ? 10 : 20;
+    const maxX = window.innerWidth - modalWidth - margin;
+    const maxY = window.innerHeight - modalHeight - margin;
+    
+    // REMOVER el centrado automático para modales secundarios
+    modalClone.style.top = "auto";
+    modalClone.style.left = "auto";
+    modalClone.style.right = "auto";
+    modalClone.style.bottom = "auto";
+    modalClone.style.margin = "0";
+    
+    if (maxX > margin && maxY > margin) {
+      const randomX = Math.max(margin, Math.random() * maxX);
+      const randomY = Math.max(margin, Math.random() * maxY);
+      
+      modalClone.style.position = "fixed";
+      modalClone.style.left = `${randomX}px`;
+      modalClone.style.top = `${randomY}px`;
+      modalClone.style.transform = "none";
+    } else {
+      // Si no hay espacio, poner en posición por defecto
+      modalClone.style.position = "fixed";
+      modalClone.style.left = `${margin}px`;
+      modalClone.style.top = `${margin}px`;
+      modalClone.style.transform = "none";
+    }
+    
     setTimeout(()=>modalClone.classList.add("show"),10);
 
     const countdownEl = modalClone.querySelector(".countdown");
@@ -180,8 +205,12 @@ document.addEventListener("DOMContentLoaded", () => {
       if(localCountdown<0) clearInterval(timer);
     },1000);
 
-    modalClone.querySelector(".closeModal").onclick=()=>{modalClone.classList.remove("show");setTimeout(()=>modalClone.remove(),500)};
-    modalClone.querySelector(".contactBtn").onclick=()=>createModal(false);
+    modalClone.querySelector(".closeModal").onclick=()=>{
+      modalClone.classList.remove("show");
+      setTimeout(()=>modalClone.remove(),500);
+    };
+    
+    modalClone.querySelector(".contactBtn").onclick=()=>createModal();
     makeDraggable(modalClone);
   }
 
@@ -195,30 +224,41 @@ document.addEventListener("DOMContentLoaded", () => {
       offsetX=e.clientX-rect.left;
       offsetY=e.clientY-rect.top;
       el.style.transition="none";
+      
+      // Si es el modal principal, remover el centrado automático
+      if(el === firstModal) {
+        el.style.top = "auto";
+        el.style.left = "auto";
+        el.style.right = "auto";
+        el.style.bottom = "auto";
+        el.style.margin = "0";
+        el.style.transform = "none";
+      }
     };
     document.onmousemove=(e)=>{
       if(!isDragging) return;
       el.style.left=e.clientX-offsetX+"px";
       el.style.top=e.clientY-offsetY+"px";
-      el.style.transform="translate(0,0)";
+      el.style.transform = "none";
     };
-    document.onmouseup=()=>{if(isDragging)isDragging=false;el.style.transition=""};
+    document.onmouseup=()=>{
+      if(isDragging) isDragging=false;
+      el.style.transition="";
+    };
   }
 });
 
-
 // --------------------
+// Efectos visuales
 setInterval(() => {
   document.body.style.transform = "translateX(3px)";
   setTimeout(()=> document.body.style.transform = "", 60);
 }, 2500);
 
-
 setInterval(() => {
   document.body.classList.add("corrupt");
   setTimeout(() => document.body.classList.remove("corrupt"), 120);
 }, 2000);
-
 
 function flashGeometry() {
   const geo = document.createElement("div");
@@ -229,11 +269,19 @@ function flashGeometry() {
 
 setInterval(flashGeometry, 900);
 
+// Corrupt text
+setTimeout(() => {
+  function corruptText(el) {
+    if (!el) return;
+    const original = el.innerText;
+    el.innerText = "@#%€//!!";
+    setTimeout(()=> {
+      if (el) el.innerText = original;
+    }, 40);
+  }
 
-function corruptText(el) {
-  const original = el.innerText;
-  el.innerText = "@#%€//!!";
-  setTimeout(()=> el.innerText = original, 40);
-}
-
-setInterval(()=> corruptText(document.querySelector("#center404")), 800);
+  const center404 = document.querySelector("#center404");
+  if (center404) {
+    setInterval(() => corruptText(center404), 800);
+  }
+}, 100);

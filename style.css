@@ -63,12 +63,11 @@ body:hover {
 
 /* Animación de glitch para modales */
 @keyframes modalGlitch {
-  0% { transform: translate(-50%, -50%) scale(0.8) rotate(0deg); opacity: 0; }
-  10% { transform: translate(calc(-50% + 2px), calc(-50% - 2px)) scale(0.85) rotate(-1deg); opacity: 1; }
-  20% { transform: translate(calc(-50% - 2px), calc(-50% + 2px)) scale(0.9) rotate(1deg); opacity: 1; }
-  30% { transform: translate(-50%, -50%) scale(0.95) rotate(0deg); opacity: 1; }
-  40% { transform: translate(calc(-50% + 1px), calc(-50% - 1px)) scale(1) rotate(0deg); opacity: 1; }
-  100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+  0% { transform: scale(0.8) rotate(0deg); opacity: 0; }
+  10% { transform: scale(0.85) rotate(-1deg); opacity: 1; }
+  20% { transform: scale(0.9) rotate(1deg); opacity: 1; }
+  40% { transform: scale(1) rotate(0deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
 }
 
 /* Aplicar al texto */
@@ -79,36 +78,26 @@ body:hover {
 }
 
 #center404 {
-  position: absolute;
-  top: 43%;
-  left: 30%;
-  transform: translate(-50%, -50%);
-  font-size: 10em;
-  color: #55c455;
-  font-family: 'MerchantCopy', monospace;
-  z-index: 2;
-}
-
-#terminal {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  padding: 10px;
-  box-sizing: border-box;
-  font-family: 'MerchantCopy', monospace;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 10em;
+  text-align: center;
   color: #55c455;
-  overflow: hidden;
-  white-space: pre-wrap;
+  font-family: 'MerchantCopy', monospace;
+  z-index: 2;
+  margin: 0;
   pointer-events: none;
-  z-index: 1;
-  animation: textBlink 0.5s infinite, textMove 5s infinite;
 }
 
 .modal-base {
   display: none;
-  position: absolute;
+  position: fixed;
   width: 500px;         
   height: 350px;        
   background: black;
@@ -122,8 +111,14 @@ body:hover {
   transition: opacity 0.3s ease, transform 0.3s ease;
 
   overflow: hidden;
-
   z-index: 2000; 
+  
+  /* Centrado usando flex */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
 }
 
 .modal-base.show {
@@ -131,6 +126,8 @@ body:hover {
   flex-direction: column;
   justify-content: space-between;
   animation: modalGlitch 1s forwards;
+  opacity: 1;
+  transform: scale(1);
 }
 
 /* ------------------------- */
@@ -342,4 +339,107 @@ body:hover {
   left: calc(10vw + 60 * random());
   z-index: 2000;
   mix-blend-mode: difference;
+}
+
+
+/* MEDIA QUERYS  */
+@media (max-width: 768px) {
+  .modal-base {
+    width: 90vw; /* Ancho responsivo */
+    max-width: 400px;
+    height: 280px; /* Altura fija más pequeña para móvil */
+    padding: 15px;
+    /* Mantener centrado - NO cambiar top/left/transform */
+  }
+  
+  .modal-base h1 {
+    font-size: 2em;
+    text-align: center;
+    color: red;
+    margin: 5px 0;
+  }
+
+  .modal-base p {
+    font-size: 0.8em;
+    text-align: center;
+    margin: 5px 0;
+  }
+
+  #center404 {
+    font-size: 4em;
+    text-align: center;
+  }
+  
+  .countdown-box {
+    padding: 5px;
+    margin: 5px 0;
+    font-size: 0.8em;
+  }
+  
+  .contactBtn {
+    padding: 8px 16px;
+    font-size: 0.9em;
+    margin-top: 5px;
+  }
+}
+
+@media (max-width: 576px) {
+  .modal-base {
+    width: 85vw;
+    max-width: 320px;
+    height: 220px; /* Altura más compacta */
+    padding: 12px;
+  }
+  
+  .modal-base h1 {
+    font-size: 1.6em;
+    margin: 3px 0;
+  }
+
+  .modal-base p {
+    font-size: 0.7em;
+    margin: 3px 0;
+  }
+
+  #center404 {
+    font-size: 3em;
+  }
+  
+  .countdown-box {
+    padding: 4px;
+    font-size: 0.75em;
+  }
+  
+  .contactBtn {
+    padding: 6px 12px;
+    font-size: 0.8em;
+  }
+}
+
+@media (max-width: 400px) {
+  .modal-base {
+    width: 82vw;
+    max-width: 280px;
+    height: 200px; /* Altura aún más compacta */
+    padding: 10px;
+  }
+  
+  .modal-base h1 {
+    font-size: 1.4em;
+    margin: 2px 0;
+  }
+
+  .modal-base p {
+    font-size: 0.65em;
+    margin: 2px 0;
+  }
+
+  #center404 {
+    font-size: 2.5em;
+  }
+  
+  .contactBtn {
+    padding: 5px 10px;
+    font-size: 0.75em;
+  }
 }
